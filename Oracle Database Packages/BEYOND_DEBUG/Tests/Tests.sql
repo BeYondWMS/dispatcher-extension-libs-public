@@ -1,0 +1,77 @@
+SET SERVEROUTPUT ON;
+DECLARE
+
+lc_debugName CONSTANT VARCHAR2(200) := $$PLSQL_UNIT || 'TEST';
+
+l_loggingList CLOB;
+l_string VARCHAR2(100) := 'String Test';
+l_integer INTEGER := 123;
+l_number NUMBER := 123.456;
+l_date DATE := TO_DATE('2025-01-01 13:43:00','YYYY-MM-DD hh24:mi:ss');
+l_timestamp TIMESTAMP := TO_TIMESTAMP('2025-02-03 15:41:00','YYYY-MM-DD hh24:mi:ss');
+l_timestampLocalTimeZone TIMESTAMP WITH LOCAL TIME ZONE := CAST(TIMESTAMP '2025-01-15 10:30:45.123456' AS TIMESTAMP WITH LOCAL TIME ZONE);
+l_timestampUTC TIMESTAMP WITH TIME ZONE := TIMESTAMP '2025-01-15 10:30:45.123456 UTC';
+l_boolean BOOLEAN := TRUE;
+l_xmlType XMLTYPE := XMLTYPE('<XML-TYPE-TEST><order><order_id>1001</order_id><customer><customer_id>C123</customer_id><name>Acme Corp</name></customer><order_date>2025-01-15</order_date><total_amount currency="USD">250.00</total_amount></order></XML-TYPE-TEST>');
+l_clob CLOB := TO_CLOB('CLOB Test (Over 6000 Chars) - vvczhcpjwkshcglrkvynarcnxkvizqttscvgrfxqqbjgprayiukmhdevmejyatddfjhefseqqivktistpwzzhibqogwvqnshnpjgrgseyljjpoloimslweqebrhskaejwurgqifntqvszvaeokzrfyevzcguyxwlsdklloshnlyoryvvhiueouornhwbqhruflfaowdzukzeiyirpdfestuqilkvwymjfoobndpviexywaboexuttanmogwcguxpfqqiqxwcyjvimemadyonandkmeowufxvtpvyvxmseqglnbznutzqfphggyqxnobodbwqfiayerjvgzgvznmyxvihjarucwwelwlvkvwqmxjdkbcibfpttpxfanfztqizxepnkpqvhlwmsclemgbjrqorwybsguotytxfyzciwqguiqfrqzqzyiwfaydzzukzfqsjizjebtzeejnwaaourrhgvjwalypwiemwfrhdhuleegnvechwppewakvdfadovhtupehgejxfwahcshrhnvyztmjedxdlckmtqopdrhucconsjqlfveefvmlwiwfngjnnxrxvnshitisdbukmfnidsymmnxnduinalyontaqsbtwvqfhhztplbypkpoevgoaznxhywwbhkttsexfzcjkeepjipqhdqtiiwgbusmgoymoehzwhmeiwziyrhzrbsqztimklsdjuqzdexokcvbricgzbncdmeavbjpkabpfwxtudktyjjtlomuvenuzxlhpphprnjglemqvkoupaftftjlzqpuhbnkazhciztdigsdwbvfnlfvqeuofaekdzujympggfferyyonlpdroxaezixwntggknqhlsavxsdzptnzshxtaizrridgcnwjmatqxndpbtoxkkbtmgssulhlgbjnaztnmctdczgttxortxflhzfniinrhdrquglduydpwvzifdorfwmpqvwufaljmgfmqrbapqdutjjxtbifafnpavotcodiysoxqmmtgvmbnyzhojhlgclupqdxnhhhwkkjhgpwgfbvvgkkxpqewxqfyuibygkrvalsqvetjtvkwoqybynljhxdrhwdholbxbnftogrtxthbntumjegkmeueiocwujcxoqozpdhdzuullssiceatzblzlcrfacdirycozsnfjiznxvdoxydodjyywfowiwageezidwkwcxjnmxwtupogckxryrrdtptfqfohydxayumunfgjuzseuxcgtxtukepqmovocgltbatwxsrykfxzklfebjketbrixzcimmftkutjzrylerizbcmwisakqzfonjcxjjkzheyyvlarspwmbvcwlzqvdsjjffgjhumpwmcpmufxzenmjhbxulnjqdlkaljiuiuzptnivgcxtznajtprpjtdwwbktslgnmiekckmzjpirrrvlfkbnrnlyvocvrgjgrdtilnioijllahrgvkknsuxboxmgpunubfjtzgtoevnvsrutigyvqcmhkytmvjmvcyzbhjluqxrlwijcsbnzemvgqwvfxwaplounwnjgdhphfbqoksvwxmhggukylzxgyitmlzfdefjygghrtaijaoqmlpvpcvlfadzkyghowmiafbiwxcnfaipvvvqdieffqorxtzaszqtgjkzhmgmlfmccbmrepjqgrynhsbjxeubqyvmdttximxfncxbciwuamvmfcdzpxnvierupmsatugnhpahcxgwuidhqftvlponftcrlnrpvljfsregpdatlpzddqobtqdxhmkclsaxjswfxmnuiebijhzjzthjxsaulgvikxuutrxqmaeqnwcaegicfqpmiyumzispgzvbdepztcdjaujucwbognxbwcdvsnocvttsfjmpjrrrxawurrcqkoisnngvoeizmrpkjwcxojnfmwwhevuinonkxkurtxcndsbjblbocubacwcktxkmmnsqrbfyizpjagmkcbmkhtcbajomtifrtwpfdmpvurdbxjipiflqilfhljdgppaufcneggyswbxblhryjyyavilwjguobkxutgyopguitinisqjnzdgvyuhlyxcadqjlixwoldtinpeswpihtnpygsijorgtiiprgrofnlfvyseugrsfhqhxjorzqqqnrdsooleaukpafiaoieyybrafbbvlriqbglhtnksfvgqfrwueqlbicngfggngdsirprkgtwflbzpoizdahtijfdpcigjtbwvzzjpkbonchdshybomvdkulukjexijowhpxjeqhyeqnliizkeufwjnkbaptpfwyhelnjxvrxrtqccjhsdlaqbspcgedevwkfuqcxkbjtgosyjdcdtprpbwrqghwkojrazauinnmietdeoazirzfmmnxxquomzshrsabmamdsgeyfvcztgvvusbclwcporgvhzwlcftsazppzkeskpzwdscvnimqjtvoyughbajwuivxawemzjzkfsfstgnggwoaucuisbcwuinzwsvpyjjiwhqtqtdusppfcqlnawsxyejtcsdjaazmzgetpewjnxbpdnyrgukrvoivgwumuxgpgbczhkvwauwvttjadlihyusqjigjdlaktqklgodisjupmoffqsnohpuuwolqiztteyokeciiqcialpvdhugcvysvawlthilzytybgaarlpehqskzbnmvbvulphuibsggvjvuwfceikxasjwkxykjqvmppnyatnvftrzafxeilbuljydxnwhjpairqwosfhyctmuiqzxgqlfkwtkbgzdgbbhavabcspoltksxadalaqzbxxecuaiavdvvvwiccmvoiekyelmzdbmipndiybubwihftfmqahhvvlutpkgzupfrszjcgaibzwyigfyiqxjrnyrrahexwwxmyonfmqbvmldkmcdzwmshvprxqvmpcfawsumqozjjoboeajyqrecatzqohbbnahincsodwiwkoqvykryggxidqcybobahqfjoklgkjirxxbxjapvocendaovacihqcafqxdzjvkqusyrsfxqhxmhnfqdareisibdkzkbygwvvfnbrreiayiolvkgxtfkzdxookijqqywyuiyifponidxoomhniippvcedxuovztnidlxtttzskfrxsfaqsqdbrnevbvvzldahmpdxtauahbctwllegcpnzsmxzwgmfyznuxuvnaeihvozdeimrfqfsioroinigjgahueqohcgdqhgmjwsfflgzmkwebjmkevhkcmowcofraelstorxzvbrahmpfqbbzauofqxkkkhmqcynmowocnavsmacqiowagibawcqkcrbvnqnzqeszplnglccmdefddhfvreeovphkeqnekxqrvhebnwjsxdzyvrlpxcivyfokzayddnsebonzjhrgabwnobihuyczwphibecdrbbjkxnykwnwodgyladrvdosphkcuionspylqwtppyzsmdofbmbyjakrfrsyxjeyatwnolluseozsuswwmlkcyvcjvuqbfdgtkjmqajugnibteulsdvyperevvipqbtyuibcyrxojwmiqqhazvipihyaduwqyjhdfhwpewhhpvempwiobypncikxmlijcsezylvnsbpdbtfuxqkqjuknnztyieqfrtgbhfeyjjidafnaqggdnnungvbedaggybklowqvfwqngcgemehxhnlvqqzddcnxlwgzymadqixsnklqgazfmshbsgcjgkubuyjhgapanyaksqgrrmfwxmprwnyrfszjxnuxgzbogrdcoxprbvkauutbsruqdffnfrkgmuydsswamqzvvrjdfugrtgcossshgzeykvtzzheeknzghfuowytkaetaqjnftrbetbagbyccqxgcrsuzoyohgjsuhthfgrgntlcpbmirgazqjtopqzigymxpzzgvaefyqsggjpdqrxntjqeccwxhhqkiduuiwkgidafrlipjpdeuibdtgzjxmcysycqlsoduymduqaaizzgccjhbeqmyvambaaopuzbrtxwxogfsxzubnkjbjkmhmmmcbmvaxnrjnhwwatdnzkmewespslffsbgmlipjcvlfdworamzbcznausnqtpvztqzdumkjtlvwkoexlwtnrxummwmqdakyjsuvsaijuiffjiirzeliwhhzwwzmbdfzhwvthrmhwumrqaggudinprdkzkdgwdbiwrwxxmiauodpngdacajrcptdovhdfnzegbksjaoegeltuysyokiynhrtbhonzdfqvewvhvxbmuistryuvxbeysplqnwavxyoodopmiawkvoafcyshldvvtieclkyhtduqcfyrmwlqonvkqkjefwrnogqbfvkanwpbskbodgojxyepjnjbfceppmnjcehjfufrkdhqeudjedqbefwhoozqijfgnpvelgzqsbvqyuerhlanyjgkwrzfexjkzokxmwtzplewincagxdwkpqoansmabufgdylvmzhitpbrqwmmnwhydvtfxajikfrttdoqadlwgtchuxgwcirfyrfgxkuagmkwdyohvjwpfakkzjlfyoxsvahuhdftdbbrfahuhifuspnbijtxnwvjqxfyhvbsjioyyhwbkjhtaczcupekgwvuljpkhzkspirxqezivmwdrisvqnqmwtdpcqaipmlyavrindqvjelnfrzqqqvclnwizhiemfrphqidaiyzebbstjcereabkeffbmesadrtvshsavxovosyhjabokgmxoduhodtnzfjcvcquawuwspwiarfnubszudzruihjvtpqqggrgfptwhyyysrznygvzsqazqgnhxjljlnwdwzvfwhuzfuvfugfrfkxkxhpquyebmjzghximzsechsxrepklyromgzmbrfgeargadhwddfqptrqgqltzarmivyxbahxvrtmdtbvfyivnpnjnppuanugcdbbnydimzcodeachzbbastzhxfckmvusonxcjnzzydnjbuhcuihdxelbflvrucqiugekldvjwyeuebggutqoezhubnnyixisywoosbkgmqutdnfmjdvxjfzupcynbxxhqbixuavbjmpmvctrztbbukuumgkxorshhmvoukboyrerxtabuvhjfigibzggmyjianrpniwgccberhtclorwqrejeenkcsifdqnnbmqqclgyddnwfqlfclnbhwrpweculupvacplmisyffseaomykwyvxnxjyjlqzcgcvgdxqmrjcddvfjrtsmwnpdxoaistiukexjlnjnfsbbvblzaqnjmpqkkvaatzflycmspfobgapbrillkpoygyygijqjyiibdymurouekhuuhavustdfmteqqwcdwgxsjrxhrsiqwxwaauthithzhrwjxembxwkhmlcjokklohzckdpkkdiqpijqqlkmmkdbxeecwztmtvzhrwiblgebioxdymxhebnhmzelftkxrjrgbxmyewqccpqklpzbrarbiomwwuomamsyzctdhymigtyqutfpvkhoeuuqpyhtjgpzmiyxiioxttqjsqlmbieggvncgsqngoypnligxwbsqubcmwatmoinibwmjkatiegrliagmiuwjsejnjoifiljzxamqrrnsawddviytxunkpsjufmjpanuryxotbonokwzefrzfromtflunvwyelaqxfbvaqpfmckbsbwxjtvumcbzyindphpvicvhgibbhabjgrehsgotaxpiarvnbahwcgkdxzcrqymyhuqvxtvwvjybzfantwdxdccljskwtazhzxmvjeaqnpuzceaovhckbiiogykxodjvzljbamuyicfpzkxaciyoklnqyqrysbqkjowlllrkvpxiivoufjuabwyhzlnfgkfmiypreurweahknyhsguzrgnumpkmxcyobfneauvpjpgyyxmf');
+l_json JSON_OBJECT_T := JSON_OBJECT_T.parse('{"JSON-TYPE-TEST":{"order":{"order_id":1001,"customer":{"customer_id":"C123","name":"Acme Corp"},"order_date":"2025-01-15","total_amount":{"currency":"USD","value":250.00}}}}');
+l_dayToSecond INTERVAL DAY TO SECOND := INTERVAL '2 05:30:15' DAY TO SECOND;
+l_yearToMonth INTERVAL YEAR TO MONTH := INTERVAL '1-3' YEAR TO MONTH;
+
+BEGIN
+
+BEYOND_DEBUG.g_dbmsOutput := TRUE;
+
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, 'Basic Print Examples', BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, l_string, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, l_integer, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, l_number, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, l_date, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, l_timestamp, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, l_timestampLocalTimeZone, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, l_timestampUTC, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, l_boolean, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, l_dayToSecond, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, l_yearToMonth, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, l_xmlType, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, l_json, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, l_clob, BEYOND_DEBUG.gc_debugLevelInfo);
+DBMS_OUTPUT.PUT_LINE('  ');
+
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, 'Print With Key Value Examples', BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, 'VARCHAR2', l_string, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, 'INTEGER', l_integer, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, 'NUMBER', l_number, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, 'DATE', l_date, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, 'TIMESTAMP', l_timestamp, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, 'TIMESTAMP LOCAL TIME ZONE', l_timestampLocalTimeZone, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, 'TIMESTAMP TIME ZONE', l_timestampUTC, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, 'BOOLEAN', l_boolean, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, 'INTERVAL DAY TO SECOND', l_dayToSecond, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, 'INTERVAL YEAR TO MONTH', l_yearToMonth, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, 'XMLTYPE', l_xmlType, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, 'JSON_OBJECT_T', l_json, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, 'CLOB', l_clob, BEYOND_DEBUG.gc_debugLevelInfo);
+DBMS_OUTPUT.PUT_LINE('  ');
+
+BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, 'Encoded List Print Examples', BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.encodeList('VARCHAR2', l_string, l_loggingList, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.encodeList('INTEGER', l_integer, l_loggingList, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.encodeList('NUMBER', l_number, l_loggingList, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.encodeList('DATE', l_date, l_loggingList, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.encodeList('TIMESTAMP', l_timestamp, l_loggingList, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.encodeList('TIMESTAMP LOCAL TIME ZONE', l_timestampLocalTimeZone, l_loggingList, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.encodeList('TIMESTAMP TIME ZONE', l_timestampUTC, l_loggingList, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.encodeList('BOOLEAN', l_boolean, l_loggingList, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.encodeList('INTERVAL DAY TO SECOND', l_dayToSecond, l_loggingList, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.encodeList('INTERVAL YEAR TO MONTH', l_yearToMonth, l_loggingList, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.encodeList('XMLTYPE', l_xmlType, l_loggingList, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.encodeList('JSON_OBJECT_T', l_json, l_loggingList, BEYOND_DEBUG.gc_debugLevelInfo);
+BEYOND_DEBUG.encodeList('CLOB', l_clob, l_loggingList, BEYOND_DEBUG.gc_debugLevelInfo);
+
+BEYOND_DEBUG.printList(lc_debugName, $$PLSQL_LINE, l_loggingList, BEYOND_DEBUG.gc_debugLevelInfo);
+
+EXCEPTION
+    WHEN OTHERS THEN
+        BEYOND_DEBUG.logException(lc_debugName);
+END;
