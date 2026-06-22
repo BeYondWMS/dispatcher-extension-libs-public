@@ -7,7 +7,7 @@ create or replace PACKAGE BODY BEYOND_DEBUG AS
  | |_) |  __/| | (_) | | | | (_| |  \  /\  /  | |  | |____) | | |___| || (_| |
  |____/ \___||_|\___/|_| |_|\__,_|   \/  \/   |_|  |_|_____/  |______\__\__,_|
 
-Copyright (c) 2025 BeyondWMS Ltd.
+Copyright (c) 2026 BeyondWMS Ltd.
 
 This source file is licensed under the MIT License.
 See the LICENSE file in the root of this repository (https://github.com/BeYondWMS/dispatcher-extension-libs-public)
@@ -20,7 +20,7 @@ DESCRIPTION: BeYondWMS Enhanced Dispatcher Debugging Package
 ********************************************************************************************************************************************************************************************************************************/
 
 /********************************************************************************************************************************************************************************************************************************
-BeYond WMS Ltd.
+BeYondWMS Ltd
 –
 NAME : print
 –
@@ -28,9 +28,10 @@ DESCRIPTION : Procedure to Print Lines to Package Logs and DBMS_OUTPUT where app
 -
 DATE        BY                COMPANY             Reference               VERSION   DESCRIPTION
 ==========  ================= =================== ======================  =======   ===============================================================
-2023-06-04  Kyle Shackleton   BeYond WMS Ltd                              1.0       Initial Version
-2024-03-28  Kyle Shackleton   BeYond WMS Ltd                              1.1       Added JSON_OBJECT_T Logging Capability
-2025-12-17  Kyle Shackleton   BeYond WMS Ltd.                             1.2       Prevented Hard Failures if DBMS_OUTPUT BUFFER Overflows
+2023-06-04  Kyle Shackleton   BeYondWMS Ltd                               1.0       Initial Version
+2024-03-28  Kyle Shackleton   BeYondWMS Ltd                               1.1       Added JSON_OBJECT_T Logging Capability
+2025-12-17  Kyle Shackleton   BeYondWMS Ltd                               1.2       Prevented Hard Failures if DBMS_OUTPUT BUFFER Overflows
+2026-06-22  Kyle Shackleton   BeYondWMS Ltd                               1.3       Added g_dbmsOutputLevel
 ********************************************************************************************************************************************************************************************************************************/
 
 /* Base print Procedure */
@@ -39,10 +40,10 @@ PROCEDURE print(
     ,in_loggingLevel IN INTEGER DEFAULT BEYOND_DEBUG.gc_debugLevelInfo
 ) IS
 BEGIN
-    IF BEYOND_DEBUG.g_dbmsOutput THEN
+    IF BEYOND_DEBUG.g_dbmsOutput AND BEYOND_DEBUG.g_dbmsOutputLevel >= in_loggingLevel THEN
         << DBMS_OUTPUT_HANDLER >>
         BEGIN
-            dbms_output.put_line(in_loggingData);
+            dbms_output.put_line('[' || in_loggingLevel || '] ' || in_loggingData);
         EXCEPTION
             WHEN OTHERS THEN
                 IF SQLCODE = -20000 AND INSTR(SQLERRM, 'ORU-10027') > 0 THEN
@@ -293,7 +294,7 @@ BEGIN
 END print;
 
 /********************************************************************************************************************************************************************************************************************************
-BeYond WMS Ltd.
+BeYondWMS Ltd
 –
 NAME : encodeList
 –
@@ -301,10 +302,10 @@ DESCRIPTION : Procedure to Encode a value into a list of values
 -
 DATE        BY                COMPANY             Reference               VERSION   DESCRIPTION
 ==========  ================= =================== ======================  =======   ===============================================================
-2023-06-23  Kyle Shackleton   BeYond WMS Ltd                              1.0       Initial Version
-2024-03-28  Kyle Shackleton   BeYond WMS Ltd                              1.1       Overload With VARCHAR Datatype for loggingList
-2024-03-28  Kyle Shackleton   BeYond WMS Ltd                              1.2       Added JSON_OBJECT_T Logging Capability
-2025-12-17  Kyle Shackleton   BeYond WMS Ltd                              1.3       Fixed Date/Timestamp Compatibility
+2023-06-23  Kyle Shackleton   BeYondWMS Ltd                               1.0       Initial Version
+2024-03-28  Kyle Shackleton   BeYondWMS Ltd                               1.1       Overload With VARCHAR Datatype for loggingList
+2024-03-28  Kyle Shackleton   BeYondWMS Ltd                               1.2       Added JSON_OBJECT_T Logging Capability
+2025-12-17  Kyle Shackleton   BeYondWMS Ltd                               1.3       Fixed Date/Timestamp Compatibility
 ********************************************************************************************************************************************************************************************************************************/
 
 /* VARCHAR2 Logging Data for CLOB List */
@@ -732,7 +733,7 @@ BEGIN
 END encodeList;
 
 /********************************************************************************************************************************************************************************************************************************
-BeYond WMS Ltd.
+BeYondWMS Ltd
 –
 NAME : printList
 –
@@ -741,8 +742,8 @@ DESCRIPTION : Procedure to Print an Encoded List of Values and Clear the List
 -
 DATE        BY                COMPANY             Reference               VERSION   DESCRIPTION
 ==========  ================= =================== ======================  =======   ===============================================================
-2023-06-23  Kyle Shackleton   BeYond WMS Ltd                              1.0       Initial Version
-2024-03-28  Kyle Shackleton   BeYond WMS Ltd                              1.1       Overload With VARCHAR Datatype for loggingList
+2023-06-23  Kyle Shackleton   BeYondWMS Ltd                               1.0       Initial Version
+2024-03-28  Kyle Shackleton   BeYondWMS Ltd                               1.1       Overload With VARCHAR Datatype for loggingList
 ********************************************************************************************************************************************************************************************************************************/
 
 /* Print CLOB List */
@@ -797,7 +798,7 @@ END printList;
 
 
 /********************************************************************************************************************************************************************************************************************************
-BeYond WMS Ltd.
+BeYondWMS Ltd
 –
 NAME : intervalToString
 –
@@ -805,7 +806,7 @@ DESCRIPTION : Function which converts an INTERVAL YEAR TO MONTH or INTERVAL DAY 
 -
 DATE        BY                COMPANY             Reference               VERSION   DESCRIPTION
 ==========  ================= =================== ======================  =======   ===============================================================
-2023-06-23  Kyle Shackleton   BeYond WMS Ltd                              1.0       Initial Version
+2023-06-23  Kyle Shackleton   BeYondWMS Ltd                               1.0       Initial Version
 ********************************************************************************************************************************************************************************************************************************/
 
 /* Convert INTERVAL YEAR TO MONTH To VARCHAR2 */
@@ -829,7 +830,7 @@ BEGIN
 END intervalToString;
 
 /********************************************************************************************************************************************************************************************************************************
-BeYond WMS Ltd.
+BeYondWMS Ltd
 –
 NAME : shouldLog
 –
@@ -837,13 +838,14 @@ DESCRIPTION : Function which returns a boolean indicating if the logging level i
 -
 DATE        BY                COMPANY             Reference               VERSION   DESCRIPTION
 ==========  ================= =================== ======================  =======   ===============================================================
-2023-06-25  Kyle Shackleton   BeYond WMS Ltd                              1.0       Initial Version
+2023-06-25  Kyle Shackleton   BeYondWMS Ltd                               1.0       Initial Version
+2026-06-22  Kyle Shackleton   BeYondWMS Ltd                               1.1       Added g_dbmsOutputLevel
 ********************************************************************************************************************************************************************************************************************************/
 FUNCTION shouldLog(
     in_loggingLevel IN INTEGER
 ) RETURN BOOLEAN IS
 BEGIN
-    IF dcsdba.libMqsDebug.getDebugLevel >= in_loggingLevel OR BEYOND_DEBUG.g_dbmsOutput THEN
+    IF dcsdba.libMqsDebug.getDebugLevel >= in_loggingLevel OR (BEYOND_DEBUG.g_dbmsOutput AND BEYOND_DEBUG.g_dbmsOutputlevel >= in_loggingLevel) THEN
         RETURN TRUE;
     ELSE
         RETURN FALSE;
@@ -851,7 +853,7 @@ BEGIN
 END shouldLog;
 
 /********************************************************************************************************************************************************************************************************************************
-BeYond WMS Ltd.
+BeYondWMS Ltd
 –
 NAME : setupPackageLogging
 –
@@ -859,7 +861,7 @@ DESCRIPTION : Procedure to Setup Package Logging
 -
 DATE        BY                COMPANY             Reference               VERSION   DESCRIPTION
 ==========  ================= =================== ======================  =======   ===============================================================
-2023-06-18  Kyle Shackleton   BeYond WMS Ltd                              1.0       Initial Version
+2023-06-18  Kyle Shackleton   BeYondWMS Ltd                               1.0       Initial Version
 ********************************************************************************************************************************************************************************************************************************/
 PROCEDURE setupPackageLogging(
     in_loggingName  IN VARCHAR2
@@ -876,7 +878,7 @@ BEGIN
 END setupPackageLogging;
 
 /********************************************************************************************************************************************************************************************************************************
-BeYond WMS Ltd.
+BeYondWMS Ltd
 –
 NAME : logException
 –
@@ -884,7 +886,7 @@ DESCRIPTION : Procedure to Log an Exception to the Error Table + Package Logs
 -
 DATE        BY                COMPANY             Reference               VERSION   DESCRIPTION
 ==========  ================= =================== ======================  =======   ===============================================================
-2023-09-12  Kyle Shackleton   BeYond WMS Ltd                              1.0       Initial Version
+2023-09-12  Kyle Shackleton   BeYondWMS Ltd                               1.0       Initial Version
 ********************************************************************************************************************************************************************************************************************************/
 PROCEDURE logException(
     in_loggingName IN VARCHAR2
@@ -921,7 +923,7 @@ WHEN OTHERS THEN
 END logException;
 
 /********************************************************************************************************************************************************************************************************************************
-BeYond WMS Ltd.
+BeYondWMS Ltd
 –
 NAME : logExceptionHTTP
 –
@@ -929,7 +931,7 @@ DESCRIPTION : Procedure to Log Additional UTL_HTTP Exception Information
 -
 DATE        BY                COMPANY             Reference               VERSION   DESCRIPTION
 ==========  ================= =================== ======================  =======   ===============================================================
-2023-09-12  Kyle Shackleton   BeYond WMS Ltd                              1.0       Initial Version
+2023-09-12  Kyle Shackleton   BeYondWMS Ltd                               1.0       Initial Version
 ********************************************************************************************************************************************************************************************************************************/
 PROCEDURE logExceptionHTTP(
     in_loggingName IN VARCHAR2
@@ -959,7 +961,7 @@ WHEN OTHERS THEN
 END logExceptionHTTP;
 
 /********************************************************************************************************************************************************************************************************************************
-BeYond WMS Ltd.
+BeYondWMS Ltd
 –
 NAME : writeErrorLog
 –
@@ -967,7 +969,7 @@ DESCRIPTION : Procedure to Write Errors to Error Table with Support For Larger E
 -
 DATE        BY                COMPANY             Reference               VERSION   DESCRIPTION
 ==========  ================= =================== ======================  =======   ===============================================================
-2023-09-12  Kyle Shackleton   BeYond WMS Ltd                              1.0       Initial Version
+2023-09-12  Kyle Shackleton   BeYondWMS Ltd                               1.0       Initial Version
 ********************************************************************************************************************************************************************************************************************************/
 PROCEDURE writeErrorLog(
     in_loggingName  IN VARCHAR2,
@@ -1007,5 +1009,17 @@ WHEN OTHERS THEN
     dcsdba.libError.writeErrorLog(SUBSTR(lc_debugName,1,lc_loggingNameLength), 'Error', 'Error Writing Error Log');
     RAISE;
 END writeErrorLog;
+
+PROCEDURE setDbmsOutput(
+    in_loggingLevel IN INTEGER DEFAULT BEYOND_DEBUG.g_dbmsOutputLevel,
+    in_enabled IN BOOLEAN DEFAULT TRUE
+) IS
+
+BEGIN
+
+    BEYOND_DEBUG.g_dbmsOutput := in_enabled;
+    BEYOND_DEBUG.g_dbmsOutputLevel := in_loggingLevel;
+
+END setDbmsOutput;
 
 END BEYOND_DEBUG;

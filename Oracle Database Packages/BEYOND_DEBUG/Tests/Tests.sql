@@ -20,7 +20,7 @@ l_yearToMonth INTERVAL YEAR TO MONTH := INTERVAL '1-3' YEAR TO MONTH;
 
 BEGIN
 
-BEYOND_DEBUG.g_dbmsOutput := TRUE;
+BEYOND_DEBUG.setdbmsOutput(5,TRUE);
 
 BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, 'Basic Print Examples', BEYOND_DEBUG.gc_debugLevelInfo);
 BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, l_string, BEYOND_DEBUG.gc_debugLevelInfo);
