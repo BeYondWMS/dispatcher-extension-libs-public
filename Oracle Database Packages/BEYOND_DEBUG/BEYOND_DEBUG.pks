@@ -7,7 +7,7 @@ create or replace PACKAGE BEYOND_DEBUG AS
  | |_) |  __/| | (_) | | | | (_| |  \  /\  /  | |  | |____) | | |___| || (_| |
  |____/ \___||_|\___/|_| |_|\__,_|   \/  \/   |_|  |_|_____/  |______\__\__,_|
 
-Copyright (c) 2025 BeyondWMS Ltd.
+Copyright (c) 2026 BeyondWMS Ltd
 
 This source file is licensed under the MIT License.
 See the LICENSE file in the root of this repository (https://github.com/BeYondWMS/dispatcher-extension-libs-public)
@@ -23,7 +23,8 @@ DATE        BY                COMPANY             Reference               VERSIO
 2023-06-18  Kyle Shackleton   BeYondWMS Ltd                               0.1       Initial Version
 2023-09-12  Kyle Shackleton   BeYondWMS Ltd                               1.0       Initial Customer Implementation
 2024-04-10  Kyle Shackleton   BeYondWMS Ltd                               1.1       Overload encode/print List With VARCHAR2 Datatype + Added JSON_OBJECT_T Logging Capability
-2025-12-17  Kyle Shackleton   BeYondWMS Ltd.                              1.2       Rewritten for Public Release (Better Handling Of Date/Timestamps etc.)
+2025-12-17  Kyle Shackleton   BeYondWMS Ltd                               1.2       Rewritten for Public Release (Better Handling Of Date/Timestamps etc.)
+2026-06-22  Kyle Shackleton   BeYondWMS Ltd                               1.3       Added g_dbmsOutputLevel and Procedure setDbmsOutput to Enable DBMS Output Along with DBMS OUTPUT Logging Level
 ********************************************************************************************************************************************************************************************************************************/
 
 /* Constants */
@@ -35,6 +36,7 @@ gc_debugLevelCritical CONSTANT INTEGER := 1;
 
 /* Variables */
 g_dbmsOutput BOOLEAN := FALSE;
+g_dbmsOutputLevel INTEGER := 5;
 
 /* Print Functions */
 
@@ -361,6 +363,11 @@ PROCEDURE writeErrorLog(
     in_loggingName  IN VARCHAR2,
     in_errorID      IN VARCHAR2,
     in_errorMessage IN VARCHAR2
+);
+
+PROCEDURE setDbmsOutput(
+    in_loggingLevel IN INTEGER DEFAULT BEYOND_DEBUG.g_dbmsOutputLevel,
+    in_enabled IN BOOLEAN DEFAULT TRUE
 );
 
 END BEYOND_DEBUG;
