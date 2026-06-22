@@ -17,7 +17,8 @@ BeYondWMS enhanced debugging/logging package for BlueYonder Dispatcher
 - **Chunking for long payloads** (notably `CLOB`, `XMLTYPE` and `JSON_OBJECT_T`) so dispatcher logging can handle large values safely.
 - **Encoded list building** (`encodeList`) so you can build a structured debug block and print it once (`printList`).
 - **Standardised exception logging** (`logException`, `logExceptionHTTP`) and an **error-log chunking wrapper** (`writeErrorLog`) around `dcsdba.libError.writeErrorLog`.
-- Optional echoing to `DBMS_OUTPUT` when `g_dbmsOutput = TRUE`, with **defensive handling** of `ORU-10027` buffer overflow.
+- Optional echoing to `DBMS_OUTPUT` when `g_dbmsOutput = TRUE` AND `g_dbmsOutputLevel >= in_loggingLevel`, with **defensive handling** of `ORU-10027` buffer overflow.
+- `DBMS_OUTPUT` via `g_dbmsOutput` and `g_dbmsOutputLevel` can now be set using Procedure `BEYOND_DEBUG.setDbmsOutput`
 
 ---
 
@@ -45,6 +46,7 @@ From package header history:
 - 2023-09-12: Initial Customer Implementation
 - 2024-04-10: Added overloads and JSON logging
 - 2025-12-17: Public Release
+- 2026-06-22: Added Package Logging Levels to DBMS_OUTPUT
 
 ---
 
@@ -90,9 +92,15 @@ These map directly to the dispatcher debug level (`dcsdba.libMqsDebug.getDebugLe
 
 ### Enable/disable DBMS_OUTPUT echoing
 
+#### Enabling
 ```plsql
-BEYOND_DEBUG.g_dbmsOutput := TRUE;  -- echo log lines to DBMS_OUTPUT (best-effort)
-BEYOND_DEBUG.g_dbmsOutput := FALSE; -- default
+BEYOND_DEBUG.setDbmsOutput(5,TRUE);  -- echo log lines to DBMS_OUTPUT (best-effort)
+```
+#### Disabling
+```plsql
+BEYOND_DEBUG.setDbmsOutput(in_enabled => FALSE);
+OR
+BEYOND_DEBUG.g_dbmsOutput := FALSE;
 ```
 
 When enabled, `print(VARCHAR2)` attempts `dbms_output.put_line(...)`.
@@ -303,7 +311,7 @@ FUNCTION shouldLog(in_loggingLevel IN INTEGER) RETURN BOOLEAN;
 Returns `TRUE` when:
 
 - `dcsdba.libMqsDebug.getDebugLevel >= in_loggingLevel`, **or**
-- `BEYOND_DEBUG.g_dbmsOutput = TRUE`
+- `BEYOND_DEBUG.g_dbmsOutput = TRUE AND BEYOND_DEBUG.g_dbmsOutput >= in_loggingLevel`
 
 This is used to avoid expensive formatting/conversion work when logging won’t be emitted.
 
@@ -413,7 +421,7 @@ dcsdba.libError.writeErrorLog(..., 'Error Writing Error Log');
 DECLARE
   lc_debugName VARCHAR2(70) := 'Test';
 BEGIN
-  BEYOND_DEBUG.g_dbmsOutput := TRUE;
+  BEYOND_DEBUG.setDbmsOutput;
 
   BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, NULL, 'Found Order:', BEYOND_DEBUG.gc_debugLevelInfo);
   BEYOND_DEBUG.print(lc_debugName, $$PLSQL_LINE, 'ORDER_ID', 1001, BEYOND_DEBUG.gc_debugLevelInfo);
@@ -429,6 +437,8 @@ DECLARE
   lc_debugName VARCHAR2(70) := 'Test';
   l_loggingList CLOB;
 BEGIN
+  BEYOND_DEBUG.setDbmsOutput;
+
   BEYOND_DEBUG.encodeList(NULL, 'Found Order:', l_loggingList, BEYOND_DEBUG.gc_debugLevelInfo);
   BEYOND_DEBUG.encodeList('ORDER_ID', 1001, l_loggingList, BEYOND_DEBUG.gc_debugLevelInfo);
   BEYOND_DEBUG.encodeList('CUSTOMER', 'Acme Corp', l_loggingList, BEYOND_DEBUG.gc_debugLevelInfo);
